@@ -108,6 +108,12 @@ DEF_CMD(SQRT, 7,
                 break;
                 })
 
+DEF_CMD(JMP, 8,
+                {
+                counter = buf[counter + 1];
+                break;
+                })
+
 DEF_CMD(END, 0,
                 {
                 printf ("END?\n");

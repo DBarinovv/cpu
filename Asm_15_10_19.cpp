@@ -14,7 +14,7 @@
 #define DEF_CMD(name, num, code)                                                           \
     else if (strncmp (strings_arr[line - 1].str, #name, strlen (#name)) == 0)              \
     {                                                                                      \
-        res [pos++] = CMD_##name;                                                          \
+        res[pos++] = CMD_##name;                                                           \
         if (num == 1)                                                                      \
         {                                                                                  \
             if (!Case_Push (strings_arr[line - 1].len, strlen (#name), &pos, res,          \
@@ -28,6 +28,10 @@
         {                                                                                  \
             Case_Pop (strings_arr[line - 1].len, strlen (#name), &pos, res,                \
                                     strings_arr[line - 1].str + strlen (#name) + 1);       \
+        }                                                                                  \
+        else if (num == 8)                                                                 \
+        {                                                                                  \
+            res[pos++] = atoi (strings_arr[line - 1].str + strlen (#name) + 1);            \
         }                                                                                  \
     }
 

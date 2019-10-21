@@ -42,7 +42,9 @@ int main ()
         case CMD_##name:                \
             code
 
-    while (counter <= sz_file)
+//    int i = 0;
+
+    while (counter <= sz_file) /*&& ++i < 50)*/
     {
         switch (buf[counter])
         {
@@ -50,6 +52,9 @@ int main ()
         default:
             break;
         }
+
+//        Dump (stk, 100, i, "Prosto");
+//        getchar();
     }
 
     Dump (stk, 100, 5, "Prosto");

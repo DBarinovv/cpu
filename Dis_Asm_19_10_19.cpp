@@ -16,6 +16,8 @@ bool Un_Fold_Push (FILE *fout, char *buf, int *pos);
 
 bool Un_Fold_Pop  (FILE *fout, char *buf, int *pos);
 
+bool Un_Fold_Jump (FILE *fout, char *buf, int *pos);
+
 //=============================================================================
 
 int main ()
@@ -46,6 +48,10 @@ int main ()
             {                                                                                  \
                 Un_Fold_Pop  (fout, buf, &pos);                                                \
             }                                                                                  \
+            else if (num == 8)                                                                 \
+            {                                                                                  \
+                Un_Fold_Jump (fout, buf, &pos);                                                \
+            }                                                                                  \
                                                                                                \
             fprintf (fout, "\n");                                                              \
             break;
@@ -75,7 +81,7 @@ bool Un_Fold_Push (FILE *fout, char *buf, int *pos)
 
     (*pos)++;
 
-    if ('a' <= buf[*pos] && buf[*pos] <= 'z')
+    if (buf[(*pos) + 1] == 'x')
     {
         fprintf (fout, " %c", buf[(*pos)++]);
         fprintf (fout, "%c",  buf[(*pos)]);
@@ -101,6 +107,17 @@ bool Un_Fold_Pop (FILE *fout, char *buf, int *pos)
         fprintf (fout, " %c", buf[(*pos)++]);
         fprintf (fout, "%c",  buf[(*pos)]);
     }
+
+    return true;
+}
+
+//=============================================================================
+
+bool Un_Fold_Jump (FILE *fout, char *buf, int *pos)
+{
+    (*pos)++;
+
+    fprintf (fout, " %d", buf[*pos]);
 
     return true;
 }
