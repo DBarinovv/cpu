@@ -12,7 +12,9 @@
 
 //=============================================================================
 
-bool Print_Int (FILE *fout, char *buf, int *pos);
+bool Un_Fold_Push (FILE *fout, char *buf, int *pos);
+
+bool Un_Fold_Pop  (FILE *fout, char *buf, int *pos);
 
 //=============================================================================
 
@@ -33,13 +35,19 @@ int main ()
 
     int pos = 0;
 
-    #define DEF_CMD(name, num, code)                           \
-        case CMD_##name:                                       \
-            fprintf (fout, "%s", #name);                       \
-            if (num == 1 && !Print_Int (fout, buf, &pos))      \
-                printf ("ERROR, NOT INT!");                    \
-                                                               \
-            fprintf (fout, "\n");                              \
+    #define DEF_CMD(name, num, code)                                                           \
+        case CMD_##name:                                                                       \
+            fprintf (fout, "%s", #name);                                                       \
+            if (num == 1)                                                                      \
+            {                                                                                  \
+                Un_Fold_Push (fout, buf, &pos);                                                \
+            }                                                                                  \
+            else if (num == 2)                                                                 \
+            {                                                                                  \
+                Un_Fold_Pop  (fout, buf, &pos);                                                \
+            }                                                                                  \
+                                                                                               \
+            fprintf (fout, "\n");                                                              \
             break;
 
     while (pos < sz_file)
@@ -54,54 +62,45 @@ int main ()
         pos++;
     }
 
+    #undef DEF_CMD
+
     return 0;
 }
 
 //=============================================================================
 
-bool Print_Int (FILE *fout, char *buf, int *pos)
+bool Un_Fold_Push (FILE *fout, char *buf, int *pos)
 {
-    int sign = 0;
-    int sum  = 0;
+    int sum = 0;
 
     (*pos)++;
 
-    if ((int) buf[*pos] == '1')         // > 0
-        sign = 1;
-    else if ((int) buf[*pos] == '2')    // < 0
-        sign = -1;
-
-    (*pos)++;
-
-    for (int i = 0; i < 4; i++)
-    {                                                               // buf || sign
-        if ((int) buf[*pos] > 0 && sign > 0)                     //  >      <
-        {
-            sum += pow (256, i) * (int) buf[*pos];
-        }
-        else if ((int) buf[*pos] > 0 && sign < 0)                //  >      >
-        {
-            sum += pow (256, i) * ((int) buf[*pos] - 256);
-        }
-        else if ((int) buf[*pos] < 0 && sign < 0)                //  <      <
-        {
-            sum += pow (256, i) * (int) buf[*pos];
-        }
-        else if ((int) buf[*pos] < 0 && sign > 0)                //  <      >
-        {
-            sum += pow (256, i) * ((int) buf[*pos] + 256);
-        }
-        else
-        {
-            sum += pow (256, i) * (int) buf[*pos];
-        }
-
-        (*pos)++;
+    if ('a' <= buf[*pos] && buf[*pos] <= 'z')
+    {
+        fprintf (fout, " %c", buf[(*pos)++]);
+        fprintf (fout, "%c",  buf[(*pos)]);
+        return true;
     }
 
-    (*pos)--;
+    sum = *(int*) (buf + *pos);
+    *pos += sizeof (int) - 1;
 
     fprintf (fout, " %d", sum);
+
+    return true;
+}
+
+//=============================================================================
+
+bool Un_Fold_Pop (FILE *fout, char *buf, int *pos)
+{
+    (*pos)++;
+
+    if (buf[(*pos) + 1] == 'x')
+    {
+        fprintf (fout, " %c", buf[(*pos)++]);
+        fprintf (fout, "%c",  buf[(*pos)]);
+    }
 
     return true;
 }

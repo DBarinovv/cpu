@@ -2,43 +2,30 @@
 
 DEF_CMD(PUSH, 1,
                 {
-                int sum  = 0;
-                int sign = 0;
-
                 counter++;
 
-                if ((int) buf[counter] == '1')         // > 0
-                    sign = 1;
-                else if ((int) buf[counter] == '2')    // < 0
-                    sign = -1;
+                int what_reg = -1;
 
-                counter++;
+                if ('a' <= buf[counter] && buf[counter] <= 'z')
+                {
+                    what_reg = Check_If_Reg (&buf[counter]);
 
-                for (int i = 0; i < 4; i++)
-                {                                                               // buf || sign
-                    if ((int) buf[counter] > 0 && sign > 0)                     //  >      <
+                    if (what_reg == -1)
                     {
-                        sum += pow (256, i) * (int) buf[counter];
-                    }
-                    else if ((int) buf[counter] > 0 && sign < 0)                //  >      >
-                    {
-                        sum += pow (256, i) * ((int) buf[counter] - 256);
-                    }
-                    else if ((int) buf[counter] < 0 && sign < 0)                //  <      <
-                    {
-                        sum += pow (256, i) * (int) buf[counter];
-                    }
-                    else if ((int) buf[counter] < 0 && sign > 0)                //  <      >
-                    {
-                        sum += pow (256, i) * ((int) buf[counter] + 256);
+                        printf ("ERROR in DEF_CMD Push in Commands.h\n");
                     }
                     else
                     {
-                        sum += pow (256, i) * (int) buf[counter];
+                        Stack_Push (stk, reg[what_reg]);
                     }
 
-                    counter++;
+                    counter += 2;
+
+                    break;
                 }
+
+                int sum = * (int*) (buf + counter);
+                counter += sizeof (int);
 
                 Stack_Push (stk, sum);
 
@@ -47,6 +34,26 @@ DEF_CMD(PUSH, 1,
 
 DEF_CMD(POP, 2,
                 {
+                int what_reg = -1;
+
+                if ('a' <= buf[counter + 1] && buf[counter + 1] <= 'z')
+                {
+                    what_reg = Check_If_Reg (&buf[counter + 1]);
+
+                    if (what_reg == -1)
+                    {
+                        printf ("ERROR in DEF_CMD Pop in Commands.h\n");
+                    }
+                    else
+                    {
+                        Stack_Pop (stk, &reg[what_reg]);
+                    }
+
+                    counter += 3;
+
+                    break;
+                }
+
                 Stack_Pop (stk, &helper_1);
                 counter++;
                 break;

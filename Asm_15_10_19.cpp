@@ -9,26 +9,33 @@
 #include "enum.h"
 #include "OneginLib.h"
 
-
 //=============================================================================
 
 #define DEF_CMD(name, num, code)                                                           \
     else if (strncmp (strings_arr[line - 1].str, #name, strlen (#name)) == 0)              \
     {                                                                                      \
         res [pos++] = CMD_##name;                                                          \
-        if (num == 1 && !Case_Push (strings_arr[line - 1].len, strlen (#name), &pos, res,  \
-                                    strings_arr[line - 1].str + strlen (#name) + 1))       \
+        if (num == 1)                                                                      \
         {                                                                                  \
-            printf ("ERROR!");                                                             \
-            break;                                                                         \
+            if (!Case_Push (strings_arr[line - 1].len, strlen (#name), &pos, res,          \
+                                    strings_arr[line - 1].str + strlen (#name) + 1))       \
+            {                                                                              \
+                printf ("ERROR in DEF_CMD in Push_Pop\n");                                 \
+                break;                                                                     \
+            }                                                                              \
+        }                                                                                  \
+        else if (num == 2)                                                                 \
+        {                                                                                  \
+            Case_Pop (strings_arr[line - 1].len, strlen (#name), &pos, res,                \
+                                    strings_arr[line - 1].str + strlen (#name) + 1);       \
         }                                                                                  \
     }
 
 //=============================================================================
 
-char *Make_Char_From_Str (char* str);
-
 bool Case_Push (const int len_of_string, const int len_of_name, int* pos, char *res, char *line);
+
+bool Case_Pop  (const int len_of_string, const int len_of_name, int* pos, char *res, char *line);
 
 //=============================================================================
 
@@ -48,15 +55,16 @@ int main ()
 
     char *res = (char *) calloc (sz_file + 1, sizeof (char));
 
+
     int line = 1;
-    int pos = 0;
+    int pos =  0;
 
     while (line < n_lines)
     {
         if (false);
         #include "Commands.h"
         else
-            printf ("ERROR in line [%d]\n", line);
+            printf ("ERROR in main in line [%d]\n", line);
 
         line++;
     }
@@ -78,42 +86,45 @@ int main ()
 
 //=============================================================================
 
-char *Make_Char_From_Str (char* str)
-{
-    int num = atoi (str);
-
-    char res[5] = {'0', '0', '0', '0', '0'};
-
-    if (num > 0)
-        res[0] = '1';   // > 0
-    else if (num < 0)
-        res[0] = '2';   // < 0
-
-    for (int i = 1; i < 5; i++)
-    {
-        res[i] = num % 256;
-
-        num /= 256;
-    }
-
-    return res;
-}
-
-//=============================================================================
-
 bool Case_Push (const int len_of_string, const int len_of_name, int* pos, char *res, char *line)
 {
-    if (len_of_string < len_of_name + 1)
+    if (len_of_string <= len_of_name)
     {
         return false;
     }
 
-    char *helper = Make_Char_From_Str (line);
-
-    for (int i = 0; i < 5; i++)
+    if (line[1] == 'x')
     {
-        res[(*pos)++] = helper[i];
+        res[(*pos)++] = line[0];
+        res[(*pos)++] = line[1];
+
+        return true;
     }
 
+    * (int*) (res + *pos) = atoi (line);
+    *pos += sizeof (int);
+
     return true;
+}
+
+//=============================================================================
+
+bool Case_Pop (const int len_of_string, const int len_of_name, int* pos, char *res, char *line)
+{
+    if (len_of_string <= len_of_name)
+    {
+        return false;
+    }
+
+    if (line[1] == 'x')
+    {
+        res[(*pos)++] = line[0];
+        res[(*pos)++] = line[1];
+
+        return true;
+    }
+    else
+        printf ("ERROR in Case_Pop!\n");
+
+    return false;
 }
