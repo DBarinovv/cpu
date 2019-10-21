@@ -30,7 +30,7 @@ DEF_CMD(PUSH, 1,
                 Stack_Push (stk, sum);
 
                 break;
-                })
+                }, 1)
 
 DEF_CMD(POP, 2,
                 {
@@ -57,7 +57,7 @@ DEF_CMD(POP, 2,
                 Stack_Pop (stk, &helper_1);
                 counter++;
                 break;
-                })
+                }, 1)
 
 DEF_CMD(ADD, 3,
                 {
@@ -67,7 +67,7 @@ DEF_CMD(ADD, 3,
                 Stack_Push (stk, (helper_1 + helper_2));
                 counter++;
                 break;
-                })
+                }, 0)
 
 DEF_CMD(SUB, 4,
                 {
@@ -77,7 +77,7 @@ DEF_CMD(SUB, 4,
                 Stack_Push (stk, (helper_1 - helper_2));
                 counter++;
                 break;
-                })
+                }, 0)
 
 DEF_CMD(MUL, 5,
                 {
@@ -87,7 +87,7 @@ DEF_CMD(MUL, 5,
                 Stack_Push (stk, (helper_1 * helper_2));
                 counter++;
                 break;
-                })
+                }, 0)
 
 DEF_CMD(DIV, 6,
                 {
@@ -97,7 +97,7 @@ DEF_CMD(DIV, 6,
                 Stack_Push (stk, (helper_1 / helper_2));
                 counter++;
                 break;
-                })
+                }, 0)
 
 DEF_CMD(SQRT, 7,
                 {
@@ -106,16 +106,16 @@ DEF_CMD(SQRT, 7,
                 Stack_Push (stk, sqrt (helper_1));
                 counter++;
                 break;
-                })
+                }, 0)
 
 DEF_CMD(JMP, 8,
                 {
                 counter = buf[counter + 1];
                 break;
-                })
+                }, 1)
 
 DEF_CMD(END, 0,
                 {
                 printf ("END?\n");
                 counter = sz_file + 1;
-                })
+                }, 0)

@@ -4,6 +4,7 @@
 #include "OneginLib.h"
 #include "Stack.h"
 #include "enum.h"
+#include "Help_functions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,11 +13,7 @@
 
 //=============================================================================
 
-bool Un_Fold_Push (FILE *fout, char *buf, int *pos);
-
-bool Un_Fold_Pop  (FILE *fout, char *buf, int *pos);
-
-bool Un_Fold_Jump (FILE *fout, char *buf, int *pos);
+bool Un_Fold_If_Have_Arg (FILE *fout, char *buf, int *pos);
 
 //=============================================================================
 
@@ -30,27 +27,19 @@ int main ()
     FILE* fin  = fopen (name_of_fin,  "r");
     FILE* fout = fopen (name_of_fout, "w");
 
-    char *buf = (char *) calloc (sz_file + 1, sizeof(char));
+    char *buf = (char *) calloc (sz_file + 1, sizeof (char));
 
     fread (buf, sizeof (char), sz_file + 1, fin);
 
 
     int pos = 0;
 
-    #define DEF_CMD(name, num, code)                                                           \
+    #define DEF_CMD(name, num, code, arg)                                                      \
         case CMD_##name:                                                                       \
             fprintf (fout, "%s", #name);                                                       \
-            if (num == 1)                                                                      \
+            if (arg == 1)                                                                      \
             {                                                                                  \
-                Un_Fold_Push (fout, buf, &pos);                                                \
-            }                                                                                  \
-            else if (num == 2)                                                                 \
-            {                                                                                  \
-                Un_Fold_Pop  (fout, buf, &pos);                                                \
-            }                                                                                  \
-            else if (num == 8)                                                                 \
-            {                                                                                  \
-                Un_Fold_Jump (fout, buf, &pos);                                                \
+                Un_Fold_If_Have_Arg (fout, buf, &pos);                                         \
             }                                                                                  \
                                                                                                \
             fprintf (fout, "\n");                                                              \
@@ -75,13 +64,15 @@ int main ()
 
 //=============================================================================
 
-bool Un_Fold_Push (FILE *fout, char *buf, int *pos)
+bool Un_Fold_If_Have_Arg (FILE *fout, char *buf, int *pos)
 {
     int sum = 0;
 
     (*pos)++;
 
-    if (buf[(*pos) + 1] == 'x')
+    int if_reg = Check_If_Reg (buf + *pos);
+
+    if (if_reg != -1)
     {
         fprintf (fout, " %c", buf[(*pos)++]);
         fprintf (fout, "%c",  buf[(*pos)]);
@@ -92,32 +83,6 @@ bool Un_Fold_Push (FILE *fout, char *buf, int *pos)
     *pos += sizeof (int) - 1;
 
     fprintf (fout, " %d", sum);
-
-    return true;
-}
-
-//=============================================================================
-
-bool Un_Fold_Pop (FILE *fout, char *buf, int *pos)
-{
-    (*pos)++;
-
-    if (buf[(*pos) + 1] == 'x')
-    {
-        fprintf (fout, " %c", buf[(*pos)++]);
-        fprintf (fout, "%c",  buf[(*pos)]);
-    }
-
-    return true;
-}
-
-//=============================================================================
-
-bool Un_Fold_Jump (FILE *fout, char *buf, int *pos)
-{
-    (*pos)++;
-
-    fprintf (fout, " %d", buf[*pos]);
 
     return true;
 }

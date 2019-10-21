@@ -37,7 +37,7 @@ enum colors {D_blue = 1, D_green, D_cyan, D_red, D_purple, D_yellow, D_white, Gr
 //=============================================================================
 
 const elem_t C_poison = -8;                                                                                                                                                                                                                      const elem_t C_secret = 179;
-const int C_start_capacity = 2;
+const int C_start_capacity = 20;
 
 const int      C_error_size     = -10;
 const stack_t* C_error_null_ptr = (stack_t *)5;
@@ -192,14 +192,14 @@ bool Stack_Realloc (stack_t* this_)
 {
     ASSERT_OK(BEFORE, Stack_Realloc)
 
-    this_ = (stack_t *) realloc (this_, sizeof (stack_t) + ((this_ -> capacity) * 2) * sizeof (elem_t));
+    (this_ -> capacity) = (this_ -> capacity) * 2;
+
+    this_ = (stack_t *) realloc (this_, sizeof (stack_t) + (this_ -> capacity + 1) * sizeof (elem_t));
 
     if (this_ == nullptr)
     {
         return false;
     }
-
-    (this_ -> capacity) = (this_ -> capacity) * 2;
 
     for (int i = (this_ -> size); i < (this_ -> capacity); i++)
     {
@@ -336,7 +336,7 @@ bool Stack_Control_Sum (stack_t* this_, const long int sum, long int *res)
 
     (this_ -> hash) = 0;
 
-    *res = Find_Hash (this_, sizeof (stack_t) + (this_ -> capacity) * sizeof (elem_t));  // -1, так как в структуре array[1]
+    *res = Find_Hash (this_, sizeof (stack_t) + (this_ -> capacity) * sizeof (elem_t));  // -1, С‚Р°Рє РєР°Рє РІ СЃС‚СЂСѓРєС‚СѓСЂРµ array[1]
 
     if (*res != sum || *res != prev_hash)
     {

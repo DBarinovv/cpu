@@ -8,38 +8,24 @@
 
 #include "enum.h"
 #include "OneginLib.h"
+#include "Help_functions.h"
 
 //=============================================================================
 
-#define DEF_CMD(name, num, code)                                                           \
+#define DEF_CMD(name, num, code, arg)                                                      \
     else if (strncmp (strings_arr[line - 1].str, #name, strlen (#name)) == 0)              \
     {                                                                                      \
         res[pos++] = CMD_##name;                                                           \
-        if (num == 1)                                                                      \
+        if (arg == 1)                                                                      \
         {                                                                                  \
-            if (!Case_Push (strings_arr[line - 1].len, strlen (#name), &pos, res,          \
-                                    strings_arr[line - 1].str + strlen (#name) + 1))       \
-            {                                                                              \
-                printf ("ERROR in DEF_CMD in Push_Pop\n");                                 \
-                break;                                                                     \
-            }                                                                              \
-        }                                                                                  \
-        else if (num == 2)                                                                 \
-        {                                                                                  \
-            Case_Pop (strings_arr[line - 1].len, strlen (#name), &pos, res,                \
-                                    strings_arr[line - 1].str + strlen (#name) + 1);       \
-        }                                                                                  \
-        else if (num == 8)                                                                 \
-        {                                                                                  \
-            res[pos++] = atoi (strings_arr[line - 1].str + strlen (#name) + 1);            \
+            Case_Have_Arg (strings_arr[line - 1].len, &pos, res,                           \
+                                      strings_arr[line - 1].str + strlen (#name) + 1);     \
         }                                                                                  \
     }
 
 //=============================================================================
 
-bool Case_Push (const int len_of_string, const int len_of_name, int* pos, char *res, char *line);
-
-bool Case_Pop  (const int len_of_string, const int len_of_name, int* pos, char *res, char *line);
+bool Case_Have_Arg (const int len_of_string, int* pos, char *res, char *line);
 
 //=============================================================================
 
@@ -90,14 +76,11 @@ int main ()
 
 //=============================================================================
 
-bool Case_Push (const int len_of_string, const int len_of_name, int* pos, char *res, char *line)
+bool Case_Have_Arg (const int len_of_string, int* pos, char *res, char *line)
 {
-    if (len_of_string <= len_of_name)
-    {
-        return false;
-    }
+    int if_reg = Check_If_Reg (line);
 
-    if (line[1] == 'x')
+    if (if_reg != -1)
     {
         res[(*pos)++] = line[0];
         res[(*pos)++] = line[1];
@@ -105,30 +88,8 @@ bool Case_Push (const int len_of_string, const int len_of_name, int* pos, char *
         return true;
     }
 
-    * (int*) (res + *pos) = atoi (line);
+    *(int*) (res + *pos) = atoi (line);
     *pos += sizeof (int);
 
     return true;
-}
-
-//=============================================================================
-
-bool Case_Pop (const int len_of_string, const int len_of_name, int* pos, char *res, char *line)
-{
-    if (len_of_string <= len_of_name)
-    {
-        return false;
-    }
-
-    if (line[1] == 'x')
-    {
-        res[(*pos)++] = line[0];
-        res[(*pos)++] = line[1];
-
-        return true;
-    }
-    else
-        printf ("ERROR in Case_Pop!\n");
-
-    return false;
 }
