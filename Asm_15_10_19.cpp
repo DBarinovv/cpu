@@ -58,19 +58,26 @@ int main ()
     int pos  =  0;
     int mark = -1;
 
-    while (line < n_lines)
+    for (int i = 0; i < 2; i++)       // 2 pass
     {
-        if (false);
-        #include "Commands.h"
-        else if (strings_arr[line - 1].str[0] == '$' && strings_arr[line - 1].str[1] == '$')
-        {
-            mark = atoi (strings_arr[line - 1].str + 2);
-            labels[mark] = pos;
-        }
-        else
-            printf ("ERROR in main in line [%d]\n", line);
+        line =  1;
+        pos  =  0;
+        mark = -1;
 
-        line++;
+        while (line < n_lines)
+        {
+            if (false);
+            #include "Commands.h"
+            else if (strings_arr[line - 1].str[0] == '$')
+            {
+                mark = atoi (strings_arr[line - 1].str + 1);
+                labels[mark] = pos;
+            }
+            else
+                printf ("ERROR in main in line [%d]\n", line);
+
+            line++;
+        }
     }
 
     fwrite (res, pos, sizeof (char), file_out);
@@ -101,9 +108,9 @@ bool Case_Have_Arg (const int len_of_string, int* pos, char *res, char *line, ch
 
         return true;
     }
-    else if (line[0] == '$' && line[1] == '$')             // !!!!!!!!!!!!!!!!!!!!!!
+    else if (line[0] == '$')
     {
-        *(int*) (res + *pos) = labels[atoi (line + 2)];
+        *(int*) (res + *pos) = labels[atoi (line + 1)];
         *pos += sizeof (int);
 
         return true;
