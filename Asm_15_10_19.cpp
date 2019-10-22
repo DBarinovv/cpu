@@ -19,13 +19,17 @@
         if (arg == 1)                                                                      \
         {                                                                                  \
             Case_Have_Arg (strings_arr[line - 1].len, &pos, res,                           \
-                                      strings_arr[line - 1].str + strlen (#name) + 1);     \
+                                strings_arr[line - 1].str + strlen (#name) + 1, labels);   \
         }                                                                                  \
     }
 
 //=============================================================================
 
-bool Case_Have_Arg (const int len_of_string, int* pos, char *res, char *line);
+const int C_cnt_of_labels = 10;
+
+//=============================================================================
+
+bool Case_Have_Arg (const int len_of_string, int* pos, char *res, char *line, char *labels);
 
 //=============================================================================
 
@@ -45,14 +49,24 @@ int main ()
 
     char *res = (char *) calloc (sz_file + 1, sizeof (char));
 
+    char labels[C_cnt_of_labels];
 
-    int line = 1;
-    int pos =  0;
+    for (int i = 0; i < C_cnt_of_labels; i++)
+        labels[i] = -1;
+
+    int line =  1;
+    int pos  =  0;
+    int mark = -1;
 
     while (line < n_lines)
     {
         if (false);
         #include "Commands.h"
+        else if (strings_arr[line - 1].str[0] == '$' && strings_arr[line - 1].str[1] == '$')
+        {
+            mark = atoi (strings_arr[line - 1].str + 2);
+            labels[mark] = pos;
+        }
         else
             printf ("ERROR in main in line [%d]\n", line);
 
@@ -76,7 +90,7 @@ int main ()
 
 //=============================================================================
 
-bool Case_Have_Arg (const int len_of_string, int* pos, char *res, char *line)
+bool Case_Have_Arg (const int len_of_string, int* pos, char *res, char *line, char *labels)
 {
     int if_reg = Check_If_Reg (line);
 
@@ -87,6 +101,14 @@ bool Case_Have_Arg (const int len_of_string, int* pos, char *res, char *line)
 
         return true;
     }
+    else if (line[0] == '$' && line[1] == '$')             // !!!!!!!!!!!!!!!!!!!!!!
+    {
+        *(int*) (res + *pos) = labels[atoi (line + 2)];
+        *pos += sizeof (int);
+
+        return true;
+    }
+
 
     *(int*) (res + *pos) = atoi (line);
     *pos += sizeof (int);
