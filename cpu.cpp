@@ -13,6 +13,10 @@
 
 //=============================================================================
 
+void Pr_Reg (elem_t *reg);
+
+//=============================================================================
+
 int main ()
 {
     char *name_of_fin = "output.txt";
@@ -41,7 +45,7 @@ int main ()
 
     int i = 0;
 
-    while (counter <= sz_file && ++i < 50)
+    while (counter <= sz_file && ++i < 500)
     {
         switch (buf[counter])
         {
@@ -51,14 +55,29 @@ int main ()
         }
 
         Dump (stk, 100, i, "Prosto");
+        Pr_Reg (reg);
         getchar();
     }
 
-    Dump (stk, 100, 5, "Prosto");
+//    Dump (stk, 100, 5, "Prosto");
 
     #undef DEF_CMD
 
     fclose (fin);
 
     return 0;
+}
+
+//=============================================================================
+
+void Pr_Reg (elem_t *reg)
+{
+    printf ("[");
+    CH(White)
+    for (int i = 0; i < 4; i++)
+    {
+        printf (" %d,", reg[i]);
+    }
+    CH_S
+    printf ("]");
 }
