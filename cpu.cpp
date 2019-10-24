@@ -34,6 +34,8 @@ int main ()
     stack_t* stk = nullptr;
     STACK_CONSTRUCTOR(stk)
 
+    stack_t* stk_for_func = nullptr;
+    STACK_CONSTRUCTOR(stk_for_func)
 
     int counter  = 0;
     int helper_1 = 0;

@@ -116,6 +116,23 @@ DEF_CMD(SQRT, 7,
                 break;
                 }, 0)
 
+DEF_CMD(CALL, 8,
+                {
+                counter++;
+
+                Stack_Push (stk_for_func, counter + 1);
+
+                counter = buf[counter];
+                break;
+                }, 1)
+
+DEF_CMD(RET, 9,
+                {
+                Stack_Pop (stk_for_func, &counter);
+
+                break;
+                }, 0)
+
 DEF_CMD(JMP, 10,
                 {
                 counter = buf[counter + 1];
